@@ -2,9 +2,6 @@ name: Render Paper Knowledge video
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - "jobs/current.json"
 
 concurrency:
   group: paper-knowledge-render
