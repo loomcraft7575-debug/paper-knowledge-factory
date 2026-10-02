@@ -11,194 +11,189 @@ from tts import generate_narration
 
 W, H = 1080, 1920
 FPS = 30
-BG = (245, 239, 224)
-INK = (29, 33, 39)
-BLUE = (54, 117, 214)
-LIGHT_BLUE = (208, 228, 255)
-CORAL = (232, 104, 85)
-LIGHT_CORAL = (255, 223, 215)
-YELLOW = (245, 195, 71)
+BG = (246, 240, 225)
+INK = (30, 34, 40)
+BLUE = (52, 117, 217)
+PALE_BLUE = (214, 232, 255)
+CORAL = (233, 100, 82)
+PALE_CORAL = (255, 224, 216)
+YELLOW = (246, 198, 69)
 WHITE = (255, 255, 255)
 
 
 def font(size: int, bold: bool = False):
-    candidates = [
+    names = [
         "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" if bold else "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
         "/usr/share/fonts/truetype/liberation2/LiberationSans-Bold.ttf" if bold else "/usr/share/fonts/truetype/liberation2/LiberationSans-Regular.ttf",
     ]
-    for p in candidates:
+    for p in names:
         if Path(p).exists():
             return ImageFont.truetype(p, size=size)
     return ImageFont.load_default()
 
 
-def ease(t: float) -> float:
-    t = max(0.0, min(1.0, t))
-    return 1 - (1 - t) ** 3
+def clamp01(x):
+    return max(0.0, min(1.0, x))
 
 
-def text_center(draw, text, y, size, fill=INK, bold=True):
-    f = font(size, bold)
-    box = draw.textbbox((0, 0), text, font=f)
-    x = (W - (box[2] - box[0])) // 2
-    draw.text((x, y), text, font=f, fill=fill)
+def ease(x):
+    x = clamp01(x)
+    return 1 - (1 - x) ** 3
 
 
-def rounded_label(draw, x, y, text, bg, fg=INK, size=42):
-    f = font(size, True)
-    box = draw.textbbox((0, 0), text, font=f)
-    tw = box[2] - box[0]
-    th = box[3] - box[1]
-    pad_x, pad_y = 28, 17
-    draw.rounded_rectangle((x, y, x + tw + pad_x * 2, y + th + pad_y * 2), 28, fill=bg)
-    draw.text((x + pad_x, y + pad_y - 3), text, font=f, fill=fg)
-
-
-def arrow(draw, x1, y1, x2, y2, fill, width=18):
-    draw.line((x1, y1, x2, y2), fill=fill, width=width)
-    ang = math.atan2(y2-y1, x2-x1)
-    L = 34
-    for d in (2.6, -2.6):
-        draw.line((x2, y2, x2 + L*math.cos(ang+d), y2 + L*math.sin(ang+d)), fill=fill, width=width)
-
-
-def paper_texture(img: Image.Image):
+def paper_texture(img):
     d = ImageDraw.Draw(img)
-    for y in range(0, H, 34):
-        alpha = 8 + ((y // 34) % 3) * 3
-        d.line((0, y, W, y), fill=(120, 110, 90, alpha), width=1)
+    for y in range(0, H, 30):
+        d.line((0, y, W, y), fill=(130, 118, 95, 18), width=1)
 
 
-def load_owl(i=0, max_size=(410, 410)):
+def center_text(d, text, y, size, fill=INK, bold=True):
+    f = font(size, bold)
+    box = d.textbbox((0, 0), text, font=f)
+    d.text(((W - (box[2]-box[0]))//2, y), text, font=f, fill=fill)
+
+
+def arrow(d, x1, y1, x2, y2, fill=BLUE, width=18):
+    d.line((x1,y1,x2,y2), fill=fill, width=width)
+    a = math.atan2(y2-y1, x2-x1)
+    L = 32
+    for delta in (2.55, -2.55):
+        d.line((x2,y2,x2 + L*math.cos(a+delta), y2 + L*math.sin(a+delta)), fill=fill, width=width)
+
+
+def brand(d):
+    d.text((50, 42), "PAPER KNOWLEDGE", font=font(32, True), fill=(92, 93, 95))
+
+
+def caption_chip(d, text, y, accent=None):
+    f = font(56, True)
+    box = d.textbbox((0,0), text, font=f)
+    tw, th = box[2]-box[0], box[3]-box[1]
+    x = (W-tw)//2
+    if accent:
+        d.rounded_rectangle((x-20,y-12,x+tw+20,y+th+18), 20, fill=accent)
+    d.text((x,y), text, font=f, fill=INK)
+
+
+def coast(d):
+    pts = [(760,370),(725,500),(755,625),(710,760),(742,895),(700,1030),(735,1160),(700,1290),(750,1450)]
+    d.line(pts, fill=INK, width=18)
+    d.text((784,390),"EAST COAST",font=font(34,True),fill=INK)
+
+
+def owl_card(img, idx, x, y, w=360, h=310, angle=-4):
     poses = sorted(Path("assets/mascot").glob("pose*.png"))
     if not poses:
-        return None
-    owl = Image.open(poses[i % len(poses)]).convert("RGBA")
-    owl.thumbnail(max_size, Image.Resampling.LANCZOS)
-    return owl
-
-
-def put_owl(img, idx, x, y, scale=1.0):
-    owl = load_owl(idx, (int(410*scale), int(410*scale)))
-    if owl is None:
         return
-    shadow = Image.new("RGBA", img.size, (0,0,0,0))
+    src = Image.open(poses[idx % len(poses)]).convert("RGB")
+    crop = ImageOps.fit(src, (w,h), method=Image.Resampling.LANCZOS, centering=(0.50,0.52)).convert("RGBA")
+
+    card = Image.new("RGBA",(w+34,h+34),(255,255,255,0))
+    cd = ImageDraw.Draw(card)
+    cd.rounded_rectangle((7,7,w+27,h+27),22,fill=(255,252,242,255),outline=(31,35,40,255),width=7)
+    card.alpha_composite(crop,(17,17))
+
+    card = card.rotate(angle, resample=Image.Resampling.BICUBIC, expand=True, fillcolor=(0,0,0,0))
+    shadow = Image.new("RGBA", card.size, (0,0,0,0))
     sd = ImageDraw.Draw(shadow)
-    sd.ellipse((x+30, y+owl.height-45, x+owl.width-25, y+owl.height+12), fill=(0,0,0,35))
-    shadow = shadow.filter(ImageFilter.GaussianBlur(12))
-    img.alpha_composite(shadow)
-    img.alpha_composite(owl, (x, y))
+    sd.rounded_rectangle((18,22,card.width-8,card.height-4),24,fill=(0,0,0,45))
+    shadow = shadow.filter(ImageFilter.GaussianBlur(14))
+    layer = Image.new("RGBA", img.size, (0,0,0,0))
+    layer.alpha_composite(shadow,(x+8,y+10))
+    layer.alpha_composite(card,(x,y))
+    img.alpha_composite(layer)
 
 
-def coast_shape(draw, offset=0):
-    pts = [
-        (780+offset, 330),(735+offset, 450),(770+offset, 560),(715+offset, 680),
-        (750+offset, 810),(700+offset, 930),(735+offset, 1050),(695+offset, 1200),
-        (740+offset, 1360),(700+offset, 1510),(760+offset, 1680)
-    ]
-    draw.line(pts, fill=INK, width=18)
-    draw.text((785+offset, 340), "EAST COAST", font=font(38, True), fill=INK)
-
-
-def caption(draw, top, words):
-    # words = [(text, active)]
-    x = 75
-    y = top
-    for text, active in words:
-        f = font(48, True)
-        box = draw.textbbox((0,0), text, font=f)
-        tw = box[2]-box[0]
-        if x + tw > W-75:
-            x = 75
-            y += 70
-        if active:
-            draw.rounded_rectangle((x-8,y-6,x+tw+8,y+56), 15, fill=YELLOW)
-        draw.text((x,y), text, font=f, fill=INK)
-        x += tw + 18
-
-
-def scene1(img, t):
+def hook_scene(img, t):
     d = ImageDraw.Draw(img)
-    d.text((55,45), "PAPER KNOWLEDGE", font=font(36, True), fill=(90,92,95))
-    text_center(d, "A NOR'EASTER CAN TURN", 155, 58)
-    text_center(d, "THE COAST INTO A WIND TUNNEL.", 225, 58, BLUE)
+    brand(d)
+    center_text(d, "WHY SO WINDY?", 135, 82, BLUE)
 
-    coast_shape(d)
-    # moving wind bands
-    for j in range(4):
-        phase = (t*180 + j*180) % 900
-        y = 520 + j*200
-        x1 = -180 + phase
-        x2 = x1 + 330
-        d.arc((x1, y-70, x2, y+100), 190, 350, fill=BLUE, width=22)
+    coast(d)
 
-    # bent tree = immediate visual consequence
-    d.line((900,1250,850,1580), fill=(95,75,55), width=28)
-    for yy in (1310,1390,1470):
-        d.line((880,yy,790,yy-65), fill=(82,122,67), width=24)
+    # fast moving paper wind ribbons
+    for i, yy in enumerate((500,680,860,1040,1220)):
+        phase = (t*340 + i*170) % 960
+        x = -260 + phase
+        d.arc((x, yy-90, x+470, yy+100), 188, 352, fill=BLUE, width=24)
 
-    put_owl(img, 0, 70, 1210, 1.0)
+    # visual consequence: bent tree
+    d.line((900,1200,842,1515), fill=(104,77,55), width=30)
+    for yy in (1280,1360,1440):
+        d.line((875,yy,770,yy-70),fill=(78,123,66),width=27)
 
-    if t < .42:
-        caption(d, 1660, [("A",False),("nor'easter",True),("can",False),("hit",False),("the",False),("East",False),("Coast",False)])
-    else:
-        caption(d, 1660, [("with",False),("wall-like",True),("winds.",False)])
+    owl_card(img,0,70,1030,w=390,h=330,angle=-5)
+    caption_chip(d, "WALL-LIKE WINDS", 1510, YELLOW)
 
 
-def scene2(img, t):
+def cold_scene(img, t):
     d = ImageDraw.Draw(img)
-    d.text((55,45), "PAPER KNOWLEDGE", font=font(36, True), fill=(90,92,95))
-    text_center(d, "THE COLLISION", 150, 68, BLUE)
+    brand(d)
+    center_text(d, "COLD AIR RUSHES SOUTH", 145, 62, BLUE)
 
-    # cold / warm paper panels slide toward each other
-    k = ease(t)
-    left_x = int(-220 + 260*k)
-    right_x = int(900 - 260*k)
-    d.rounded_rectangle((left_x,420,left_x+470,1180), 55, fill=LIGHT_BLUE)
-    d.rounded_rectangle((right_x,420,right_x+470,1180), 55, fill=LIGHT_CORAL)
-    d.text((left_x+90,520), "COLD", font=font(74,True), fill=BLUE)
-    d.text((left_x+65,615), "CANADIAN", font=font(48,True), fill=BLUE)
-    d.text((left_x+120,680), "AIR", font=font(62,True), fill=BLUE)
-    d.text((right_x+95,520), "WARMER", font=font(58,True), fill=CORAL)
-    d.text((right_x+80,600), "ATLANTIC", font=font(52,True), fill=CORAL)
-    d.text((right_x+130,670), "AIR", font=font(62,True), fill=CORAL)
+    # simplified Canada paper shape + falling arrows
+    d.rounded_rectangle((120,360,880,800),60,fill=PALE_BLUE)
+    d.text((190,470),"CANADA",font=font(82,True),fill=BLUE)
+    for i in range(4):
+        yy = 820 + int(((t*420 + i*155) % 520))
+        arrow(d, 310+i*120, yy-140, 310+i*120, yy, BLUE, 18)
 
-    # collision pulse
-    r = 45 + 90*abs(math.sin(t*math.pi))
-    d.ellipse((W//2-r,800-r,W//2+r,800+r), outline=YELLOW, width=18)
-    arrow(d, 300, 930, 490, 930, BLUE, 20)
-    arrow(d, 780, 930, 590, 930, CORAL, 20)
-
-    put_owl(img, 2, 585, 1180, .92)
-    caption(d, 1640, [("Cold",True),("Canadian",False),("air",False),("meets",False),("the",False),("warmer",True),("Atlantic.",False)])
+    owl_card(img,1,620,1040,w=330,h=285,angle=4)
+    caption_chip(d, "COLD CANADIAN AIR", 1480, PALE_BLUE)
 
 
-def scene3(img, t):
+def ocean_scene(img, t):
     d = ImageDraw.Draw(img)
-    d.text((55,45), "PAPER KNOWLEDGE", font=font(36, True), fill=(90,92,95))
-    text_center(d, "TIGHTER PRESSURE LINES", 145, 60, BLUE)
-    text_center(d, "= FASTER WIND", 220, 72, CORAL)
+    brand(d)
+    center_text(d, "THE ATLANTIC IS MILDER", 145, 62, CORAL)
 
-    # isobars compress through time
-    gap = int(110 - 58*ease(t))
-    start = W//2 - gap*2
+    # warm ocean band slides in from right
+    x0 = int(260 - 120*ease(t))
+    d.rounded_rectangle((x0,420,1040,1220),60,fill=PALE_CORAL)
+    d.text((x0+120,560),"ATLANTIC",font=font(78,True),fill=CORAL)
     for i in range(5):
-        x = start + i*gap
-        d.arc((x-310,480,x+310,1210), 80, 280, fill=BLUE, width=12)
+        x = x0+130+i*120
+        y = 830 + int(28*math.sin((t*6)+(i*0.7)))
+        d.arc((x-40,y-20,x+120,y+75),180,360,fill=CORAL,width=15)
 
-    # low center + fast wind arrows
-    d.ellipse((430,680,650,900), outline=BLUE, width=18)
-    d.text((500,715), "L", font=font(110,True), fill=BLUE)
-    speed = ease(t)
-    for j,y in enumerate((540,1050,1240)):
-        x = int(120 + ((t*650 + j*220) % 700))
-        arrow(d, x, y, min(x+220+int(100*speed), 960), y-20, CORAL if j==1 else BLUE, 18)
+    # blue air enters from left to make collision readable
+    arrow(d,150,960,460,960,BLUE,24)
+    arrow(d,900,960,590,960,CORAL,24)
+    pulse = 45 + 55*abs(math.sin(t*math.pi))
+    d.ellipse((540-pulse,960-pulse,540+pulse,960+pulse),outline=YELLOW,width=18)
 
-    put_owl(img, 4, 70, 1190, .98)
-    if t < .48:
-        caption(d, 1640, [("That",False),("contrast",True),("deepens",False),("low",False),("pressure.",False)])
+    owl_card(img,2,80,1060,w=350,h=295,angle=-3)
+    caption_chip(d, "COLD + MILD", 1470, YELLOW)
+
+
+def pressure_scene(img, t):
+    d = ImageDraw.Draw(img)
+    brand(d)
+    center_text(d, "PRESSURE LINES TIGHTEN", 135, 64, BLUE)
+    center_text(d, "WIND SPEEDS UP", 215, 72, CORAL)
+
+    # shrinking gap between isobars
+    gap = int(115 - 65*ease(t))
+    cx = 555
+    for i in range(6):
+        x = cx - gap*2 + i*gap
+        d.arc((x-320,430,x+320,1250),75,285,fill=BLUE,width=13)
+
+    d.ellipse((465,690,645,870),outline=BLUE,width=16)
+    d.text((525,715),"L",font=font(92,True),fill=BLUE)
+
+    # moving wind streaks show speed increase
+    sp = 260 + int(220*ease(t))
+    for i,yy in enumerate((600,1040,1220)):
+        x = int(100 + ((t*820 + i*230) % 740))
+        arrow(d,x,yy,min(x+sp,980),yy-10,CORAL if i==1 else BLUE,19)
+
+    owl_card(img,4,65,1160,w=350,h=295,angle=-4)
+
+    if t < .5:
+        caption_chip(d, "LOW PRESSURE DEEPENS", 1500, PALE_BLUE)
     else:
-        caption(d, 1640, [("Tighter",True),("pressure",False),("lines",False),("mean",False),("faster",True),("wind.",False)])
+        caption_chip(d, "TIGHTER = FASTER", 1500, YELLOW)
 
 
 def main():
@@ -215,55 +210,53 @@ def main():
     narration = build / "prototype.wav"
     dur = generate_narration(script, narration, voice="af_sky", speed=1.0)
 
-    # keep preview in a true short-form window; if TTS runs long, lightly speed audio, never slow it
-    target = 14.5
-    if dur > 15.5:
-        tempo = min(1.18, dur / target)
+    if dur > 12.2:
+        tempo = min(1.12, dur/11.7)
         sped = build / "prototype_sped.wav"
-        subprocess.run([
-            "ffmpeg","-y","-i",str(narration),"-filter:a",f"atempo={tempo:.4f}",str(sped)
-        ], check=True)
+        subprocess.run(["ffmpeg","-y","-i",str(narration),"-filter:a",f"atempo={tempo:.4f}",str(sped)],check=True)
         narration = sped
         data, sr = sf.read(narration)
-        dur = len(data) / sr
+        dur = len(data)/sr
 
-    total = min(max(dur, 12.0), 15.5)
-    frame_count = int(total * FPS)
+    total = max(11.4, min(dur+0.3, 12.0))
+    frames = int(total*FPS)
 
-    video_no_audio = build / "prototype_video.mp4"
+    raw = build/"prototype_video.mp4"
     ff = subprocess.Popen([
         "ffmpeg","-y","-f","rawvideo","-pix_fmt","rgb24","-s",f"{W}x{H}",
-        "-r",str(FPS),"-i","-",
-        "-an","-c:v","libx264","-preset","veryfast","-crf","20","-pix_fmt","yuv420p",
-        str(video_no_audio)
-    ], stdin=subprocess.PIPE)
+        "-r",str(FPS),"-i","-","-an","-c:v","libx264","-preset","veryfast",
+        "-crf","19","-pix_fmt","yuv420p",str(raw)
+    ],stdin=subprocess.PIPE)
 
-    for n in range(frame_count):
-        sec = n / FPS
+    cuts = [0.0,0.24,0.46,0.68,1.0]
+    for n in range(frames):
+        p = (n/FPS)/total
         img = Image.new("RGBA",(W,H),BG+(255,))
         paper_texture(img)
-        if sec < total*0.30:
-            scene1(img, sec/(total*0.30))
-        elif sec < total*0.64:
-            scene2(img, (sec-total*0.30)/(total*0.34))
+        if p < cuts[1]:
+            hook_scene(img,(p-cuts[0])/(cuts[1]-cuts[0]))
+        elif p < cuts[2]:
+            cold_scene(img,(p-cuts[1])/(cuts[2]-cuts[1]))
+        elif p < cuts[3]:
+            ocean_scene(img,(p-cuts[2])/(cuts[3]-cuts[2]))
         else:
-            scene3(img, (sec-total*0.64)/(total*0.36))
+            pressure_scene(img,(p-cuts[3])/(cuts[4]-cuts[3]))
         ff.stdin.write(img.convert("RGB").tobytes())
 
     ff.stdin.close()
-    if ff.wait() != 0:
+    if ff.wait()!=0:
         raise SystemExit("video frame render failed")
 
-    final = out / "paper_knowledge_prototype.mp4"
+    final = out/"paper_knowledge_prototype.mp4"
     subprocess.run([
-        "ffmpeg","-y","-i",str(video_no_audio),"-i",str(narration),
+        "ffmpeg","-y","-i",str(raw),"-i",str(narration),
         "-filter_complex","[1:a]loudnorm=I=-16:TP=-1.5:LRA=7[a]",
         "-map","0:v:0","-map","[a]","-c:v","copy","-c:a","aac","-b:a","160k",
-        "-shortest",str(final)
-    ], check=True)
+        "-ar","48000","-shortest",str(final)
+    ],check=True)
 
     print(final)
 
 
-if __name__ == "__main__":
+if __name__=="__main__":
     main()
