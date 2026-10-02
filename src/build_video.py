@@ -8,7 +8,7 @@ from pathlib import Path
 from textwrap import wrap
 
 import soundfile as sf
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 from tts import generate_narration
 
@@ -114,28 +114,61 @@ def draw_diagram(draw, kind: str):
         centered_text(draw, "PAPER KNOWLEDGE", 780, 72, True)
 
 
+SCENE_HEADERS = {
+    "hook": "THE HOOK",
+    "east_coast_low": "LOW PRESSURE",
+    "air_masses": "TEMPERATURE CONTRAST",
+    "pressure": "PRESSURE DIFFERENCE",
+    "gradient": "PRESSURE GRADIENT",
+    "rotation": "EARTH'S ROTATION",
+    "northeast": "WHY NORTHEAST?",
+    "comparison": "NOT A HURRICANE",
+}
+
+
 def place_mascot(canvas: Image.Image, pose_index: int):
     poses = sorted(Path("assets/mascot").glob("*.png"))
     if not poses:
         return
     path = poses[pose_index % len(poses)]
-    mascot = Image.open(path).convert("RGBA")
-    mascot.thumbnail((390, 390))
-    x = 40 if pose_index % 2 == 0 else W - mascot.width - 40
-    y = H - mascot.height - 60
-    canvas.alpha_composite(mascot, (x, y))
+    source = Image.open(path).convert("RGB")
+    avatar = ImageOps.fit(source, (270, 270), method=Image.Resampling.LANCZOS, centering=(0.5, 0.5)).convert("RGBA")
+
+    mask = Image.new("L", avatar.size, 0)
+    md = ImageDraw.Draw(mask)
+    md.ellipse((0, 0, avatar.width - 1, avatar.height - 1), fill=255)
+    avatar.putalpha(mask)
+
+    x = 58 if pose_index % 2 == 0 else W - avatar.width - 58
+    y = 1615
+    draw = ImageDraw.Draw(canvas)
+    draw.ellipse((x - 12, y - 12, x + avatar.width + 12, y + avatar.height + 12), fill=(255, 255, 255, 235), outline=BLUE, width=8)
+    canvas.alpha_composite(avatar, (x, y))
 
 
 def render_scene(scene: dict, title: str, index: int, output: Path):
     img = Image.new("RGBA", (W, H), BG + (255,))
     draw = ImageDraw.Draw(img)
-    draw.text((45, 40), "PAPER KNOWLEDGE", font=font(38, True), fill=GRAY)
-    centered_text(draw, title, 130, 68, True, INK, 25)
+
+    # small brand line + scene progress, rather than repeating the full title
+    draw.text((45, 40), "PAPER KNOWLEDGE", font=font(34, True), fill=GRAY)
+    progress_x2 = 45 + int((W - 90) * ((index + 1) / 8.0))
+    draw.rounded_rectangle((45, 92, W - 45, 104), 6, fill=(220, 216, 204))
+    draw.rounded_rectangle((45, 92, progress_x2, 104), 6, fill=BLUE)
+
+    if index == 0:
+        centered_text(draw, title, 145, 76, True, INK, 23)
+    else:
+        header = SCENE_HEADERS.get(scene.get("diagram", ""), "HOW IT WORKS")
+        centered_text(draw, header, 165, 54, True, BLUE, 24)
+
     draw_diagram(draw, scene.get("diagram", ""))
+
     caption = scene.get("caption", "")
-    y = 1450
-    draw.rounded_rectangle((60, y-35, W-60, H-120), 38, fill=(255,255,255,235))
-    centered_text(draw, caption, y, 52, True, INK, 30)
+    y = 1375
+    draw.rounded_rectangle((70, y - 30, W - 70, 1585), 34, fill=(255, 255, 255, 242))
+    centered_text(draw, caption, y, 48, True, INK, 31)
+
     place_mascot(img, int(scene.get("mascot", index)))
     output.parent.mkdir(parents=True, exist_ok=True)
     img.convert("RGB").save(output, quality=95)
@@ -183,21 +216,48 @@ def main(job_path: str):
         render_scene(scene, job.get("title", "Paper Knowledge"), i, path)
         frame_paths.append(path)
 
-    concat = work / "concat.txt"
-    lines = []
-    for p in frame_paths:
-        lines.append(f"file '{p.resolve()}'")
-        lines.append(f"duration {per_scene:.6f}")
-    lines.append(f"file '{frame_paths[-1].resolve()}'")
-    concat.write_text("\n".join(lines), encoding="utf-8")
+    # Turn each still into a short moving shot. The mascot remains a still image,
+    # while the camera motion keeps the TikTok composition alive.
+    segments_dir = work / "segments"
+    segments_dir.mkdir(parents=True, exist_ok=True)
+    segment_paths = []
+    for i, p in enumerate(frame_paths):
+        seg = segments_dir / f"segment_{i:02d}.mp4"
+        zoom_rate = 0.00011 + (i % 3) * 0.00002
+        vf = (
+            "zoompan="
+            f"z='min(zoom+{zoom_rate:.5f},1.035)':"
+            "x='iw/2-(iw/zoom/2)':"
+            "y='ih/2-(ih/zoom/2)':"
+            "d=1:s=1080x1920:fps=30,"
+            "format=yuv420p"
+        )
+        run([
+            "ffmpeg", "-y",
+            "-loop", "1", "-framerate", "30", "-i", str(p),
+            "-t", f"{per_scene:.6f}",
+            "-vf", vf,
+            "-an",
+            "-c:v", "libx264", "-preset", "veryfast", "-crf", "20",
+            str(seg),
+        ])
+        segment_paths.append(seg)
+
+    concat = work / "segments.txt"
+    concat.write_text(
+        "\n".join(f"file '{p.resolve()}'" for p in segment_paths),
+        encoding="utf-8",
+    )
 
     video = out / "paper_knowledge.mp4"
     run([
-        "ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", str(concat),
+        "ffmpeg", "-y",
+        "-f", "concat", "-safe", "0", "-i", str(concat),
         "-i", str(narration),
-        "-vf", "fps=30,format=yuv420p",
-        "-c:v", "libx264", "-preset", "veryfast", "-crf", "20",
-        "-c:a", "aac", "-b:a", "160k", "-shortest", str(video)
+        "-c:v", "copy",
+        "-c:a", "aac", "-b:a", "160k",
+        "-shortest",
+        str(video),
     ])
 
     info = ffprobe(video)
