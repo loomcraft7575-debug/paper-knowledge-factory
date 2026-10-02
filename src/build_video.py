@@ -88,7 +88,7 @@ def draw_diagram(draw, kind: str):
         for x in xs:
             draw.line((x, 620, x, 1130), fill=BLUE, width=10)
         arrow(draw, (180, 1250), (850, 1250), RED, 22)
-        centered_text(draw, "closer isobars = stronger wind", 1360, 45, True)
+        centered_text(draw, "closer isobars = stronger wind", 1255, 42, True)
     elif kind == "rotation":
         draw.ellipse((350, 650, 730, 1030), outline=BLUE, width=18)
         draw.text((468, 735), "L", font=font(140, True), fill=BLUE)
@@ -103,7 +103,7 @@ def draw_diagram(draw, kind: str):
         draw.text((690, 610), "COAST", font=font(46, True), fill=INK)
         arrow(draw, (220, 760), (610, 1030), BLUE, 24)
         draw.text((155, 650), "NE", font=font(86, True), fill=BLUE)
-        centered_text(draw, "winds blow toward the coast", 1320, 48, True)
+        centered_text(draw, "winds blow toward the coast", 1245, 44, True)
     elif kind == "comparison":
         draw.rounded_rectangle((65, 610, 505, 1210), 40, outline=RED, width=12)
         draw.rounded_rectangle((575, 610, 1015, 1210), 40, outline=BLUE, width=12)
