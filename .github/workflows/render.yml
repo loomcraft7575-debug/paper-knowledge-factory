@@ -28,11 +28,14 @@ jobs:
           path: .cache/kokoro
           key: kokoro-v1-int8
 
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+          ffmpeg -version | head -n 2
+
       - name: Install Python dependencies
         run: pip install -r requirements.txt
-
-      - name: Verify FFmpeg
-        run: ffmpeg -version | head -n 2
 
       - name: Render and QA
         env:
