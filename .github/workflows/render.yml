@@ -1,0 +1,49 @@
+name: Render Paper Knowledge video
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "jobs/current.json"
+
+concurrency:
+  group: paper-knowledge-render
+  cancel-in-progress: false
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Cache Kokoro model
+        uses: actions/cache@v4
+        with:
+          path: .cache/kokoro
+          key: kokoro-v1-int8
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Verify FFmpeg
+        run: ffmpeg -version | head -n 2
+
+      - name: Render and QA
+        env:
+          KOKORO_CACHE: .cache/kokoro
+        run: python src/build_video.py jobs/current.json
+
+      - name: Upload rendered video
+        uses: actions/upload-artifact@v4
+        with:
+          name: paper-knowledge-video
+          path: |
+            output/paper_knowledge.mp4
+            output/qa.json
+          retention-days: 2
