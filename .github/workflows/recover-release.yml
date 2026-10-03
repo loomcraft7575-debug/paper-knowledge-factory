@@ -1,0 +1,58 @@
+name: Recover Paper Knowledge stable releases
+permissions:
+  actions: read
+  contents: write
+on:
+  push:
+    paths:
+      - "recovery/releases/*.json"
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read recovery request
+        id: req
+        shell: bash
+        run: |
+          FILE=$(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" | grep '^recovery/releases/.*\.json$' | head -n1)
+          test -n "$FILE"
+          echo "job_id=$(jq -r .job_id "$FILE")" >> "$GITHUB_OUTPUT"
+          echo "artifact_id=$(jq -r .artifact_id "$FILE")" >> "$GITHUB_OUTPUT"
+      - name: Download verified render artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir recovered
+          gh api "/repos/${{ github.repository }}/actions/artifacts/${{ steps.req.outputs.artifact_id }}/zip" > artifact.zip
+          unzip -q artifact.zip -d recovered
+      - name: Reverify QA and video
+        shell: bash
+        run: |
+          ID="${{ steps.req.outputs.job_id }}"
+          python - <<'PY'
+          import json, subprocess, os
+          i=os.environ["ID"]
+          q=json.load(open(f"recovered/{i}.json"))
+          assert q.get("ok") is True
+          assert float(q["duration_seconds"]) >= 65
+          assert q["resolution"] == "1080x1920"
+          p=json.loads(subprocess.check_output(["ffprobe","-v","error","-select_streams","v:0","-show_entries","stream=width,height,avg_frame_rate","-show_entries","format=duration","-of","json",f"recovered/{i}.mp4"]))
+          s=p["streams"][0]; n,d=map(float,s["avg_frame_rate"].split("/")); fps=n/d
+          assert s["width"]==1080 and s["height"]==1920 and float(p["format"]["duration"])>=65 and fps>=23
+          print(json.dumps({"ok":True,"duration":float(p["format"]["duration"]),"resolution":"1080x1920","fps":fps}))
+          PY
+        env:
+          ID: ${{ steps.req.outputs.job_id }}
+      - name: Publish stable release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          ID="${{ steps.req.outputs.job_id }}"
+          TAG="pk-$ID"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "recovered/$ID.mp4" "recovered/$ID.json" --clobber
+          else
+            gh release create "$TAG" "recovered/$ID.mp4" "recovered/$ID.json" --title "Paper Knowledge $ID" --notes "Recovered and reverified QA-passed render."
+          fi
