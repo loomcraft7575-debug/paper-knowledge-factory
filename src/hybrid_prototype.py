@@ -302,7 +302,8 @@ def main():
         "-filter_complex",
         "[1:a]loudnorm=I=-16:TP=-1.5:LRA=7[n];"
         "[2:a]highpass=f=180,lowpass=f=1500,volume=0.12[w];"
-        "[n][w]amix=inputs=2:duration=first:dropout_transition=0[a]",
+        "[n][w]amix=inputs=2:duration=first:dropout_transition=0[m];"
+        "[m]loudnorm=I=-16:TP=-1.5:LRA=7[a]",
         "-map","0:v:0","-map","[a]","-c:v","copy","-c:a","aac","-b:a","160k",
         "-ar","48000","-t",f"{total:.3f}",str(final)
     ],check=True)
