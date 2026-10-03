@@ -154,7 +154,7 @@ def main(job_path):
     raw=build/"raw.mp4"
     ff=subprocess.Popen([
         "ffmpeg","-y","-f","rawvideo","-pix_fmt","rgb24","-s",f"{W}x{H}","-r",str(FPS),"-i","-",
-        "-an","-c:v","libx264","-preset","veryfast","-crf","23","-pix_fmt","yuv420p",str(raw)
+        "-an","-c:v","libx264","-preset","veryfast","-crf","29","-pix_fmt","yuv420p",str(raw)
     ],stdin=subprocess.PIPE)
 
     seg=total/13
@@ -183,7 +183,7 @@ def main(job_path):
         "acompressor=threshold=-18dB:ratio=2.1:attack=18:release=140,loudnorm=I=-16:TP=-1.3:LRA=6[v];"
         "[2:a]highpass=f=160,lowpass=f=1800,volume=0.08[w];"
         "[v][w]amix=inputs=2:duration=longest:dropout_transition=0[m];[m]loudnorm=I=-16:TP=-1.3:LRA=6[a]",
-        "-map","0:v:0","-map","[a]","-c:v","copy","-c:a","aac","-b:a","160k","-ar","48000","-t",f"{total:.3f}",str(final)
+        "-map","0:v:0","-map","[a]","-c:v","copy","-c:a","aac","-b:a","128k","-ar","48000","-t",f"{total:.3f}",str(final)
     ],check=True)
     qa={"ok":True,"job_id":job_id,"duration_seconds":round(total,3),"resolution":"1080x1920","sources":job.get("sources",[])}
     (out/f"{job_id}.json").write_text(json.dumps(qa,indent=2),encoding="utf-8")
