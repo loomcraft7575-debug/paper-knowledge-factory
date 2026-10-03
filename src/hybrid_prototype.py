@@ -149,7 +149,18 @@ def main():
         narr=fast
         data,sr=sf.read(narr); dur=len(data)/sr
 
-    total=max(9.4,min(dur+.2,10.8))
+    # Match the visual timeline to the actual narration so no beats are truncated.
+    data,sr=sf.read(narr)
+    dur=len(data)/sr
+    if dur>8.4:
+        tempo=min(1.14,dur/7.9)
+        fast2=build/"hybrid_fast2.wav"
+        subprocess.run(["ffmpeg","-y","-i",str(narr),"-filter:a",f"atempo={tempo:.4f}",str(fast2)],check=True)
+        narr=fast2
+        data,sr=sf.read(narr)
+        dur=len(data)/sr
+
+    total=dur
     frames=int(total*FPS)
 
     raw=build/"hybrid_raw.mp4"
@@ -163,73 +174,68 @@ def main():
         sec=n/FPS
         p=sec/total
 
-        # 7 distinct visual beats in ~10 seconds.
-        if p<.15:
-            q=p/.15
+        # 7 visually distinct beats across the actual narration (~1 second each).
+        if p<.14:
+            q=p/.14
             idx=int(q*max(1,len(gif_frames)-1))
             img=gif_frames[min(idx,len(gif_frames)-1)].copy()
-            img=zoom_crop(img,1.03+0.06*q,(.49,.49))
+            img=zoom_crop(img,1.04+0.07*q,(.49,.49))
             d=ImageDraw.Draw(img)
-            text_center(d,"THIS IS A NOR'EASTER",145,68)
-            subtitle(d,"A storm from space")
+            text_center(d,"NOR'EASTER",145,78)
+            subtitle(d,"FROM SPACE")
             credit(d)
 
-        elif p<.30:
-            q=(p-.15)/.15
-            idx=int((.35+.65*q)*max(1,len(gif_frames)-1))
-            img=gif_frames[min(idx,len(gif_frames)-1)].copy()
-            img=zoom_crop(img,1.09+0.08*q,(.52,.50))
+        elif p<.28:
+            q=(p-.14)/.14
+            img=zoom_crop(thermal,1.02+0.20*q,(.48,.53))
             d=ImageDraw.Draw(img)
-            subtitle(d,"Cold air meets the Atlantic")
-            credit(d)
-
-        elif p<.44:
-            q=(p-.30)/.14
-            img=zoom_crop(thermal,1.0+0.18*q,(.48,.53))
-            d=ImageDraw.Draw(img)
-            pulse=68+38*abs(math.sin(q*math.pi))
+            pulse=70+42*abs(math.sin(q*math.pi))
             d.ellipse((475-pulse,980-pulse,475+pulse,980+pulse),outline=YELLOW,width=18)
             d.text((505,928),"LOW",font=font(56,True),fill=YELLOW,stroke_width=4,stroke_fill=INK)
-            subtitle(d,"Low pressure deepens")
+            subtitle(d,"LOW PRESSURE")
             credit(d)
 
-        elif p<.58:
-            q=(p-.44)/.14
-            # NOAA formation graphic: zoom into jet stream entering the coast.
-            img=zoom_crop(formation,1.06+0.22*q,(.47,.58))
+        elif p<.42:
+            q=(p-.28)/.14
+            img=zoom_crop(formation,1.03+0.17*q,(.40,.57))
             d=ImageDraw.Draw(img)
-            subtitle(d,"The jet stream brings cold air")
+            subtitle(d,"COLD AIR SOUTH")
             d.text((30,1855),"Graphic: NOAA/JPL-Caltech",font=font(25,True),fill=(255,255,255,220),stroke_width=3,stroke_fill=(0,0,0,150))
 
-        elif p<.72:
-            q=(p-.58)/.14
-            # Shift focal point to the northeast-wind arrows.
-            img=zoom_crop(formation,1.20+0.12*q,(.61,.56))
+        elif p<.56:
+            q=(p-.42)/.14
+            img=zoom_crop(formation,1.16+0.17*q,(.47,.60))
             d=ImageDraw.Draw(img)
-            subtitle(d,"Northeast winds aim at the coast")
+            subtitle(d,"JET STREAM")
             d.text((30,1855),"Graphic: NOAA/JPL-Caltech",font=font(25,True),fill=(255,255,255,220),stroke_width=3,stroke_fill=(0,0,0,150))
 
-        elif p<.86:
-            q=(p-.72)/.14
-            img=zoom_crop(thermal,1.12+0.16*q,(.44,.56))
+        elif p<.70:
+            q=(p-.56)/.14
+            img=zoom_crop(formation,1.22+0.16*q,(.64,.54))
             d=ImageDraw.Draw(img)
-            # Animated pressure-gradient cue over real imagery.
+            subtitle(d,"NORTHEAST WINDS")
+            d.text((30,1855),"Graphic: NOAA/JPL-Caltech",font=font(25,True),fill=(255,255,255,220),stroke_width=3,stroke_fill=(0,0,0,150))
+
+        elif p<.84:
+            q=(p-.70)/.14
+            img=zoom_crop(thermal,1.10+0.18*q,(.44,.56))
+            d=ImageDraw.Draw(img)
             for j in range(3):
                 y=720+j*170
-                x1=80+int(80*q)
-                x2=650+int(150*q)
+                x1=70+int(90*q)
+                x2=650+int(160*q)
                 arrow(d,x1,y,x2,y+70,BLUE if j!=1 else ORANGE,18)
-            subtitle(d,"A tighter gradient speeds the wind")
+            subtitle(d,"TIGHTER GRADIENT")
             credit(d)
 
         else:
-            q=(p-.86)/.14
+            q=(p-.84)/.16
             idx=int((.55+.45*q)*max(1,len(gif_frames)-1))
             img=gif_frames[min(idx,len(gif_frames)-1)].copy()
             img=zoom_crop(img,1.08+0.10*q,(.52,.50))
             d=ImageDraw.Draw(img)
-            text_center(d,"PRESSURE DIFFERENCE → WIND",210,50,fill=YELLOW)
-            subtitle(d,"That's why the coast gets blasted")
+            text_center(d,"FASTER WIND",220,64,fill=YELLOW)
+            subtitle(d,"HITS THE COAST")
             credit(d)
 
         ff.stdin.write(img.convert("RGB").tobytes())
@@ -248,7 +254,7 @@ def main():
         "[2:a]highpass=f=180,lowpass=f=1500,volume=0.12[w];"
         "[n][w]amix=inputs=2:duration=first:dropout_transition=0[a]",
         "-map","0:v:0","-map","[a]","-c:v","copy","-c:a","aac","-b:a","160k",
-        "-ar","48000","-shortest",str(final)
+        "-ar","48000","-t",f"{total:.3f}",str(final)
     ],check=True)
 
     print(final)
