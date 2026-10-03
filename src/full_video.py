@@ -26,7 +26,7 @@ URLS={
     "gif2018":"https://www.nesdis.noaa.gov/s3/2025-08/noreasterBW.gif",
     "thermal":"https://www.nesdis.noaa.gov/s3/styles/webp/s3/2025-08/noreasterVIIRS.png.webp?itok=wCuFFTtW",
     "formation":"https://www.nesdis.noaa.gov/s3/styles/webp/s3/2025-08/noreasterformation.jpg.webp?itok=Du5nao6i",
-    "geo2018a":"https://www.nesdis.noaa.gov/s3/migrated/2174v1_20180104-noreaster.png",
+    "geo2018a":"https://www.nesdis.noaa.gov/s3/migrated/20180302-noreaster.png",
     "geo2018b":"https://www.nesdis.noaa.gov/s3/migrated/20180302-noreaster.png",
     "geo2018c":"https://www.nesdis.noaa.gov/s3/migrated/20180322-noreaster.png",
     "gif2020":"https://www.nesdis.noaa.gov/s3/migrated/20201217_noreaster-mp4.gif",
@@ -353,9 +353,18 @@ def main():
         try: gifs[key]=load_gif(URLS[key])
         except Exception:
             gifs[key]=[load_image(URLS["geo2018a"])]
+    fallback=load_image(URLS["thermal"])
     for key in ("thermal","geo2018a","geo2018b","geo2018c"):
-        stills[key]=load_image(URLS[key])
-    formation=load_image(URLS["formation"])
+        try:
+            stills[key]=load_image(URLS[key])
+        except Exception as exc:
+            print(f"WARNING: {key} failed to load: {exc}; using NOAA thermal fallback")
+            stills[key]=fallback.copy()
+    try:
+        formation=load_image(URLS["formation"])
+    except Exception as exc:
+        print(f"WARNING: formation graphic failed: {exc}; using thermal fallback")
+        formation=fallback.copy()
 
     # Natural voice first; only a small automatic speed adjustment is allowed.
     wav=build/"voice.wav"
