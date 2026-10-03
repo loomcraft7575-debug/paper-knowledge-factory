@@ -1,0 +1,47 @@
+{
+  "job_id": "d8e2190a-42b8-4ffc-a02c-fff655ccc0d8",
+  "batch_index": 12,
+  "question": "Why do soda cans hiss when opened?",
+  "voice": "af_heart",
+  "script": "That sharp hiss from a soda can is pressure escaping, not the drink screaming. Carbonated drinks are bottled with carbon dioxide dissolved in liquid under pressure. While the can stays sealed, the high pressure above the drink helps keep extra carbon dioxide dissolved. The moment you pull the tab, pressure over the liquid drops toward normal atmospheric pressure. Suddenly the drink can no longer hold as much dissolved gas. Carbon dioxide begins leaving the liquid, first forming tiny bubbles at scratches, particles, and other nucleation sites. Those bubbles grow and rise, carrying gas toward the opening. The first rush of compressed gas makes the hiss you hear. Shaking the can creates many more bubbles inside before opening, giving the gas lots of ready-made places to expand. That is why a shaken soda can foam violently. The hiss is simply a fast pressure change plus dissolved carbon dioxide finding its way back into the air.",
+  "beats": [
+    "Why do soda cans hiss when opened?",
+    "That sharp hiss from a soda can is pressure escaping, not the drink screaming",
+    "Carbonated drinks are bottled with carbon dioxide dissolved in liquid under pressure",
+    "While the can stays sealed, the high pressure above the drink helps keep extra carbon dioxide dissolved",
+    "The moment you pull the tab, pressure over the liquid drops toward normal atmospheric pressure",
+    "Suddenly the drink can no longer hold as much dissolved gas",
+    "Carbon dioxide begins leaving the liquid, first forming tiny bubbles at scratches, particles, and other nucleation sites",
+    "Those bubbles grow and rise, carrying gas toward the opening",
+    "The first rush of compressed gas makes the hiss you hear",
+    "Shaking the can creates many more bubbles inside before opening, giving the gas lots of ready-made places to expand",
+    "That is why a shaken soda can foam violently",
+    "The hiss is simply a fast pressure change plus dissolved carbon dioxide finding its way back into the air",
+    "Owl mascot points to a simple labeled science diagram"
+  ],
+  "sources": [
+    {
+      "title": "ACS study of carbonated water bubble nucleation",
+      "url": "https://pubs.acs.org/doi/10.1021/acs.jafc.9b00155"
+    },
+    {
+      "title": "University of Ioannina carbon dioxide teaching notes",
+      "url": "https://icaseonline.net/parsel/www.parsel.uni-kiel.de/cms/fileadmin/parsel/Material/Ioannina/neu/Carbon_Dioxide_5_TeacherNotes.pdf"
+    }
+  ],
+  "visual_urls": [],
+  "planned_publish_at": null,
+  "hashtags": [
+    "Science",
+    "Chemistry",
+    "PaperKnowledge"
+  ],
+  "caption": "Why do soda cans hiss when opened? The everyday science explained in under 90 seconds. #Science #chemistry #PaperKnowledge",
+  "category": "chemistry",
+  "trend_evidence": "Retained evergreen everyday-science topic; no stronger trend-linked replacement justified.",
+  "visual_rules": {
+    "owl_static_poses_only": true,
+    "owl_sunglasses_cover_eyes": true,
+    "no_visible_eyes_on_naturally_eyed_creatures": true
+  }
+}
