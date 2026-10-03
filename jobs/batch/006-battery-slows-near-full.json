@@ -1,0 +1,39 @@
+{
+  "job_id": "6315d9dd-415c-46fb-bf88-fed54f210543",
+  "batch_index": 6,
+  "question": "Why do phone batteries charge slower near 100%?",
+  "voice": "af_heart",
+  "script": "Why does your phone race to 80 percent, then suddenly act sleepy? Lithium-ion charging is deliberately gentler near full. Early in a charge, the battery can accept relatively high current while its voltage rises. As the cell approaches its allowed upper voltage, the charger changes behavior: it holds voltage near a limit and lets the charging current taper downward. That final portion therefore adds energy more slowly. Phone software may slow things further when the battery is warm, because high temperature and spending lots of time at very high charge can accelerate battery aging. Apple describes its batteries as fast-charging to around 80 percent, then reducing current, and modern phones can also delay the last part of charging for longevity. So the slowdown is not your charger becoming tired. It is the battery-management system becoming cautious as the cell gets full, balancing charging speed, temperature, safety, and long-term battery health.",
+  "beats": [
+    "Why does charging slow near full?",
+    "Early charging can use higher current",
+    "Battery voltage rises as charge increases",
+    "Near the limit, charging strategy changes",
+    "Voltage is held near a safe ceiling",
+    "Charging current begins to taper",
+    "Less current means slower energy gain",
+    "Heat can make software slow charging too",
+    "High temperature can age batteries faster",
+    "Apple describes fast charge to about 80%",
+    "Then current is reduced toward full",
+    "Battery management is being cautious",
+    "The slowdown protects performance and lifespan"
+  ],
+  "sources": [
+    {
+      "title": "Apple — Why Lithium-ion?",
+      "url": "https://www.apple.com/batteries/why-lithium-ion/"
+    },
+    {
+      "title": "Battery University — Charging Lithium-ion",
+      "url": "https://batteryuniversity.com/article/bu-409-charging-lithium-ion"
+    }
+  ],
+  "visual_urls": [],
+  "planned_publish_at": "2026-10-03T11:30:00+03:00",
+  "hashtags": [
+    "Science",
+    "Engineering",
+    "PaperKnowledge"
+  ]
+}
