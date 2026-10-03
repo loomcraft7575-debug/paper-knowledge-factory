@@ -1,0 +1,39 @@
+{
+  "job_id": "b1099d4e-8656-470a-b60b-b5019de9c928",
+  "batch_index": 5,
+  "question": "How does a touchscreen know where you touched?",
+  "voice": "af_heart",
+  "script": "Your phone can locate a fingertip without any moving button. Most smartphones use a capacitive touchscreen. Beneath the glass is a transparent pattern of conductive electrodes, and the electronics continuously measure tiny electrical relationships across that grid. Your body conducts electricity, so when your finger approaches or touches the glass, it changes the local capacitance and disturbs the screen’s electric field. A controller scans the grid, compares those changes, and calculates the touch coordinates. Because there are many sensing points, the phone can track several fingers and follow them as they move. This also explains why ordinary thick gloves often fail: insulating material weakens the electrical coupling between your finger and the sensor. Conductive gloves or a compatible stylus restore that coupling. The screen is not simply sensing pressure like a mechanical switch. It is measuring a tiny electrical change and turning that invisible disturbance into an exact location.",
+  "beats": [
+    "How does glass know where your finger is?",
+    "Most phones use capacitive touch",
+    "A transparent electrode grid hides below the glass",
+    "The grid creates measurable electric fields",
+    "Your body is electrically conductive",
+    "Your finger changes local capacitance",
+    "The controller scans the whole grid",
+    "It finds where the change is strongest",
+    "That becomes an X-and-Y coordinate",
+    "Many sensors enable multi-touch",
+    "Motion becomes a stream of coordinates",
+    "Gloves can weaken the coupling",
+    "Your touch becomes an electrical signal"
+  ],
+  "sources": [
+    {
+      "title": "MIT School of Engineering — touchscreens",
+      "url": "https://engineering.mit.edu/ask-an-engineer/how-do-touch-sensitive-screens-work"
+    },
+    {
+      "title": "Microchip — Capacitive Touch Sensor Design",
+      "url": "https://www.microchip.com/en-us/application-notes/an2934"
+    }
+  ],
+  "visual_urls": [],
+  "hashtags": [
+    "Science",
+    "Engineering",
+    "Technology",
+    "PaperKnowledge"
+  ]
+}
