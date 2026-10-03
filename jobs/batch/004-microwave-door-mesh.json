@@ -1,0 +1,39 @@
+{
+  "job_id": "ec15288e-65a7-4710-8fd7-1346681185b9",
+  "batch_index": 4,
+  "question": "Why does a microwave door have a metal mesh?",
+  "voice": "af_heart",
+  "script": "That black mesh on your microwave door is doing two opposite jobs at once. It lets visible light reach your eyes, so you can watch the food, while helping keep microwave energy inside the oven. Microwaves are electromagnetic waves, and the oven's metal walls reflect them back into the cooking chamber. The door's screen is metal too. Its holes are tiny compared with the wavelength of the microwaves used for cooking, so the screen behaves much more like a solid metal barrier to those waves. Visible light has a far shorter wavelength, so plenty of it can pass through the openings. The result is a window you can see through without simply leaving a wide opening for microwave energy. The door also uses seals and safety interlocks, and regulators limit allowable leakage. So that dotted pattern is not decoration. It is a clever piece of electromagnetic shielding that makes seeing your dinner compatible with keeping the oven safely enclosed.",
+  "beats": [
+    "Why is there metal mesh in the door?",
+    "The window has two jobs at once",
+    "Visible light must reach your eyes",
+    "Microwave energy should stay inside",
+    "Microwaves are electromagnetic waves",
+    "Metal reflects microwave energy",
+    "The screen is metal too",
+    "Its holes are tiny compared with microwaves",
+    "So microwaves see an almost solid barrier",
+    "Visible light has a much shorter wavelength",
+    "Light can pass through the small openings",
+    "Seals and interlocks add more protection",
+    "That dotted screen is electromagnetic shielding"
+  ],
+  "sources": [
+    {
+      "title": "FDA — Microwave Ovens",
+      "url": "https://www.fda.gov/radiation-emitting-products/resources-you-radiation-emitting-products/microwave-ovens"
+    },
+    {
+      "title": "Health Canada — Microwave Ovens",
+      "url": "https://www.canada.ca/en/health-canada/services/health-risks-safety/radiation/everyday-things-emit-radiation/microwave-ovens.html"
+    }
+  ],
+  "visual_urls": [],
+  "planned_publish_at": "2026-10-03T08:50:00+03:00",
+  "hashtags": [
+    "Science",
+    "Engineering",
+    "PaperKnowledge"
+  ]
+}
