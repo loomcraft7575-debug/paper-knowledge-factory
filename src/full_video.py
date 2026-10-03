@@ -81,11 +81,32 @@ def text_center(d,text,y,size,fill=WHITE,stroke=5):
     d.text(((W-(b[2]-b[0]))//2,y),text,font=f,fill=fill,stroke_width=stroke,stroke_fill=INK)
 
 
-def subtitle(d,text,y=1625,size=52):
+def subtitle(d,text,y=1585,size=48,max_width=910):
+    display=text.strip()
+    if display.isupper():
+        display=display.capitalize()
     f=font(size,True)
-    b=d.textbbox((0,0),text,font=f,stroke_width=5)
-    x=(W-(b[2]-b[0]))//2
-    d.text((x,y),text,font=f,fill=WHITE,stroke_width=5,stroke_fill=INK)
+    words=display.split()
+    lines=[]
+    current=""
+    for word in words:
+        trial=(current+" "+word).strip()
+        box=d.textbbox((0,0),trial,font=f,stroke_width=5)
+        if current and (box[2]-box[0])>max_width:
+            lines.append(current)
+            current=word
+        else:
+            current=trial
+    if current:
+        lines.append(current)
+    if len(lines)>2:
+        lines=[" ".join(lines[:-1]),lines[-1]]
+    line_h=size+16
+    start_y=y-(len(lines)-1)*(line_h//2)
+    for i,line in enumerate(lines):
+        b=d.textbbox((0,0),line,font=f,stroke_width=5)
+        x=(W-(b[2]-b[0]))//2
+        d.text((x,start_y+i*line_h),line,font=f,fill=WHITE,stroke_width=5,stroke_fill=INK)
 
 
 def credit(d,text="NOAA satellite imagery"):
@@ -189,7 +210,7 @@ def graphic_card(background,source,mode="full",progress=0):
         crop=src.crop((0,int(src.height*.15),int(src.width*.74),src.height))
         card=ImageOps.fit(crop,(930,800),method=Image.Resampling.LANCZOS,centering=(.5,.57))
     else:
-        crop=src.crop((int(src.width*.36),int(src.height*.10),src.width,int(src.height*.90)))
+        crop=src.crop((int(src.width*.36),int(src.height*.24),src.width,int(src.height*.92)))
         card=ImageOps.fit(crop,(930,800),method=Image.Resampling.LANCZOS,centering=(.58,.5))
     scale=1.0+.035*progress
     card=card.resize((int(card.width*scale),int(card.height*scale)),Image.Resampling.LANCZOS)
