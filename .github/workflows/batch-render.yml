@@ -1,0 +1,65 @@
+name: Render Paper Knowledge batch job
+
+on:
+  push:
+    paths:
+      - "jobs/batch/*.json"
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    outputs:
+      job_file: ${{ steps.pick.outputs.job_file }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - id: pick
+        shell: bash
+        run: |
+          FILE=$(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" | grep '^jobs/batch/.*\.json$' | head -n 1)
+          if [ -z "$FILE" ]; then
+            echo "No batch job file found"
+            exit 1
+          fi
+          echo "job_file=$FILE" >> "$GITHUB_OUTPUT"
+
+  render:
+    needs: discover
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+      - name: Cache Kokoro model
+        uses: actions/cache@v4
+        with:
+          path: .cache/kokoro
+          key: kokoro-v1-int8
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Render
+        env:
+          KOKORO_CACHE: .cache/kokoro
+        run: python src/batch_video.py "${{ needs.discover.outputs.job_file }}"
+      - name: Read job id
+        id: id
+        shell: bash
+        run: |
+          ID=$(python -c 'import json; print(json.load(open("${{ needs.discover.outputs.job_file }}"))["job_id"])')
+          echo "job_id=$ID" >> "$GITHUB_OUTPUT"
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: video-${{ steps.id.outputs.job_id }}
+          path: |
+            output/${{ steps.id.outputs.job_id }}.mp4
+            output/${{ steps.id.outputs.job_id }}.json
+          retention-days: 1
