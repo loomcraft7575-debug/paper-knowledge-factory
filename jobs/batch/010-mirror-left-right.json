@@ -1,0 +1,39 @@
+{
+  "job_id": "e50d6dd8-bde1-4e2d-8e37-6d415cb5f73e",
+  "batch_index": 10,
+  "question": "Why do mirrors seem to flip left and right?",
+  "voice": "af_heart",
+  "script": "Mirrors do not actually swap left and right. That sounds wrong until you track what reflection really changes. Stand in front of a flat mirror and point upward: your image points upward. Point to your right: the image appears on that same side of the mirror. What changes is the direction perpendicular to the mirror. Your nose points toward the glass, while the image's nose appears to point out from behind it. In other words, reflection reverses front and back, not specifically left and right. So why does writing look backward? Because we imagine turning ourselves around to face the way the reflected person seems to face. A normal turn swaps which side of space our left and right hands occupy, and our brains compare the image with that imagined rotation. Physics only applies the law of reflection: incoming and reflected rays make equal angles with the surface normal. The famous left-right flip is mostly how we interpret the geometry.",
+  "beats": [
+    "Mirrors do not actually swap left and right",
+    "Point up and the image still points up",
+    "Point right and watch the geometry",
+    "The key direction is perpendicular to the mirror",
+    "Your nose points toward the glass",
+    "The image seems to point out from behind it",
+    "Reflection reverses front and back",
+    "So why does writing look backward?",
+    "We imagine rotating ourselves to face the image",
+    "That imagined turn swaps spatial sides",
+    "Our brains compare reflection with rotation",
+    "Light simply follows the law of reflection",
+    "The left-right flip is an interpretation"
+  ],
+  "sources": [
+    {
+      "title": "West Texas A&M University — Why do mirrors flip left to right?",
+      "url": "https://www.wtamu.edu/~cbaird/sq/2013/01/05/why-do-mirrors-flip-left-to-right-and-not-up-to-down/"
+    },
+    {
+      "title": "University of Tennessee Physics — Mirrors",
+      "url": "https://labs.phys.utk.edu/mbreinig/phys421/modules/m3/mirrors.html"
+    }
+  ],
+  "visual_urls": [],
+  "planned_publish_at": "2026-10-03T16:50:00+03:00",
+  "hashtags": [
+    "Science",
+    "Engineering",
+    "PaperKnowledge"
+  ]
+}
