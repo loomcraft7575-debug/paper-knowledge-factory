@@ -1,0 +1,39 @@
+{
+  "job_id": "21cd434d-80b1-4e9e-8cbd-91f5fe1aff8f",
+  "batch_index": 7,
+  "question": "Why do induction cooktops heat pans so quickly?",
+  "voice": "af_heart",
+  "script": "An induction cooktop can heat a pan quickly because it skips a major transfer step. Under the glass is a copper coil carrying rapidly changing alternating current, which creates a changing magnetic field. Put compatible magnetic cookware above it, and that field induces electrical currents inside the pan itself. The pan’s electrical resistance converts those currents into heat, so the cookware becomes the heater. A conventional electric stove first heats an element and then transfers heat into the pan. Gas heats the pan with a flame while also warming surrounding air. Induction sends energy directly into compatible cookware, which is why response can feel almost immediate and temperature changes happen quickly. The glass still becomes hot from contact with the hot pan, but it is not the primary heat source. That is also why a simple magnet test is useful: if a magnet sticks firmly to the pan base, the cookware is generally suitable for induction.",
+  "beats": [
+    "Why can induction heat a pan so fast?",
+    "A copper coil hides under the glass",
+    "Alternating current creates a changing magnetic field",
+    "The field reaches compatible cookware",
+    "It induces electrical currents inside the pan",
+    "The pan resists those currents",
+    "Electrical energy becomes heat",
+    "The pan itself becomes the heater",
+    "There is no hot coil to heat first",
+    "Less energy warms the surrounding air",
+    "Power changes affect the pan quickly",
+    "The glass is not the primary heat source",
+    "Direct heating makes induction responsive"
+  ],
+  "sources": [
+    {
+      "title": "Cornell Cooperative Extension — Induction Cooking",
+      "url": "https://ccetompkins.org/energy/induction-cooking"
+    },
+    {
+      "title": "Weber State University — Induction Cooking",
+      "url": "https://www.weber.edu/sustainability/solutions/induction-cooking.html"
+    }
+  ],
+  "visual_urls": [],
+  "hashtags": [
+    "Science",
+    "Engineering",
+    "Induction",
+    "PaperKnowledge"
+  ]
+}
