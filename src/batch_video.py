@@ -8,7 +8,7 @@ import soundfile as sf
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageOps
 from tts import generate_narration
 
-W,H,FPS=1080,1920,20
+W,H,FPS=1080,1920,30
 BG=(242,236,221); INK=(25,30,38); BLUE=(52,118,222); ORANGE=(244,127,75); YELLOW=(249,204,72); WHITE=(255,255,255)
 
 def font(size,bold=False):
