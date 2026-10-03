@@ -1,0 +1,41 @@
+name: Render Paper Knowledge full preview
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "full/trigger.txt"
+
+jobs:
+  full-preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+      - name: Cache Kokoro model
+        uses: actions/cache@v4
+        with:
+          path: .cache/kokoro
+          key: kokoro-v1-int8
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+      - name: Render full preview
+        env:
+          KOKORO_CACHE: .cache/kokoro
+        run: python src/full_video.py
+      - name: Upload full preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: paper-knowledge-full-preview
+          path: |
+            output/PaperKnowledge_Noreaster_Full_Preview.mp4
+            output/full_qa.json
+          retention-days: 2
