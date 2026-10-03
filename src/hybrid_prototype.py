@@ -119,6 +119,43 @@ def diagram_frame(t):
     return img
 
 
+
+def graphic_card(background, source, mode="full", progress=0.0):
+    bg=background.convert("RGB").filter(ImageFilter.GaussianBlur(22))
+    shade=Image.new("RGBA",(W,H),(0,0,0,70))
+    bg=bg.convert("RGBA")
+    bg.alpha_composite(shade)
+
+    src=source.convert("RGB")
+    if mode=="full":
+        card=ImageOps.contain(src,(960,760),method=Image.Resampling.LANCZOS)
+    elif mode=="jet":
+        # left / lower half where the jet stream enters the storm.
+        crop=src.crop((0,int(src.height*.18),int(src.width*.72),src.height))
+        card=ImageOps.fit(crop,(930,820),method=Image.Resampling.LANCZOS,centering=(.52,.58))
+    else:
+        # northeast-wind arrows and storm center.
+        crop=src.crop((int(src.width*.38),int(src.height*.10),src.width,int(src.height*.90)))
+        card=ImageOps.fit(crop,(930,820),method=Image.Resampling.LANCZOS,centering=(.58,.50))
+
+    # Gentle punch-in inside the card.
+    scale=1.0+0.035*progress
+    card=card.resize((int(card.width*scale),int(card.height*scale)),Image.Resampling.LANCZOS)
+
+    layer=Image.new("RGBA",(W,H),(0,0,0,0))
+    shadow=Image.new("RGBA",(card.width+40,card.height+40),(0,0,0,0))
+    sd=ImageDraw.Draw(shadow)
+    sd.rounded_rectangle((18,18,card.width+22,card.height+22),28,fill=(0,0,0,105))
+    shadow=shadow.filter(ImageFilter.GaussianBlur(12))
+
+    x=(W-card.width)//2
+    y=470 if mode=="full" else 440
+    layer.alpha_composite(shadow,(x-20,y-10))
+    layer.alpha_composite(card.convert("RGBA"),(x,y))
+    bg.alpha_composite(layer)
+    return bg.convert("RGB")
+
+
 def main():
     out=Path("output"); out.mkdir(exist_ok=True)
     build=Path("build"); build.mkdir(exist_ok=True)
@@ -130,7 +167,7 @@ def main():
     gif=Image.open(io.BytesIO(gif_data))
     gif_frames=[fit_vertical(f.copy()) for f in ImageSequence.Iterator(gif)]
     thermal=fit_vertical(Image.open(io.BytesIO(thermal_data)))
-    formation=fit_vertical(Image.open(io.BytesIO(formation_data)))
+    formation=Image.open(io.BytesIO(formation_data)).convert("RGB")
 
     script=(
         "This is a nor'easter from space. "
@@ -197,16 +234,29 @@ def main():
 
         elif p<.42:
             q=(p-.28)/.14
-            img=zoom_crop(formation,1.03+0.17*q,(.40,.57))
+            idx=int((.20+.25*q)*max(1,len(gif_frames)-1))
+            base=gif_frames[min(idx,len(gif_frames)-1)].copy()
+            img=graphic_card(base,formation,"full",q)
             d=ImageDraw.Draw(img)
-            subtitle(d,"COLD AIR SOUTH")
+            subtitle(d,"COLD + WARM AIR")
             d.text((30,1855),"Graphic: NOAA/JPL-Caltech",font=font(25,True),fill=(255,255,255,220),stroke_width=3,stroke_fill=(0,0,0,150))
 
         elif p<.56:
             q=(p-.42)/.14
-            img=zoom_crop(formation,1.16+0.17*q,(.47,.60))
+            idx=int((.30+.20*q)*max(1,len(gif_frames)-1))
+            base=gif_frames[min(idx,len(gif_frames)-1)].copy()
+            img=graphic_card(base,formation,"jet",q)
             d=ImageDraw.Draw(img)
             subtitle(d,"JET STREAM")
+            d.text((30,1855),"Graphic: NOAA/JPL-Caltech",font=font(25,True),fill=(255,255,255,220),stroke_width=3,stroke_fill=(0,0,0,150))
+
+        elif p<.70:
+            q=(p-.56)/.14
+            idx=int((.40+.20*q)*max(1,len(gif_frames)-1))
+            base=gif_frames[min(idx,len(gif_frames)-1)].copy()
+            img=graphic_card(base,formation,"wind",q)
+            d=ImageDraw.Draw(img)
+            subtitle(d,"NORTHEAST WINDS")
             d.text((30,1855),"Graphic: NOAA/JPL-Caltech",font=font(25,True),fill=(255,255,255,220),stroke_width=3,stroke_fill=(0,0,0,150))
 
         elif p<.70:
