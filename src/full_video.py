@@ -14,7 +14,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageOps, ImageSequenc
 
 from tts import generate_narration
 
-W,H,FPS=1080,1920,20
+W,H,FPS=1080,1920,30
 INK=(25,30,38)
 BLUE=(52,118,222)
 ORANGE=(244,127,75)
