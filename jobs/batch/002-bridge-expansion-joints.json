@@ -1,0 +1,40 @@
+{
+  "job_id": "dfbd83c1-5a47-4810-b3c9-f4c6ff7d160c",
+  "batch_index": 2,
+  "question": "Why do bridges have expansion joints?",
+  "voice": "af_heart",
+  "script": "Why do bridges need gaps in them? Because a bridge is never exactly the same length all year. Steel and concrete expand when they get warmer and contract when they cool. On a long bridge, even a tiny change per meter adds up to several centimeters of movement across the whole structure. Expansion joints give that movement somewhere to go. Instead of forcing the deck to push, crack, buckle, or stress nearby parts, the joint opens and closes as temperature changes. Some joints use flexible seals, sliding plates, or interlocking steel fingers, depending on how much movement the bridge must handle. Engineers actually try to use as few joints as possible, because joints can leak and need maintenance. But where movement has to be accommodated, that small gap is doing a big job. So the bump you sometimes feel while driving over a bridge is not a mistake. It is part of the bridge making room to breathe.",
+  "beats": [
+    "Why does a bridge need a gap?",
+    "A bridge changes length with temperature",
+    "Warm materials expand",
+    "Cold materials contract",
+    "Tiny changes add up across a long span",
+    "The joint gives that movement somewhere to go",
+    "Without room, stress builds inside the structure",
+    "The joint opens and closes as temperature changes",
+    "Some joints use flexible seals",
+    "Others use sliding plates or steel fingers",
+    "Engineers try to minimize joints because they need maintenance",
+    "That bump under your tires is designed movement",
+    "A small gap can protect a huge bridge"
+  ],
+  "sources": [
+    {
+      "title": "FHWA Glossary - Expansion Joints",
+      "url": "https://www.fhwa.dot.gov/bridge/prefab/if09010/appe.cfm"
+    },
+    {
+      "title": "FHWA - Bridge Deck Expansion Joints",
+      "url": "https://www.fhwa.dot.gov/bridge/pubs/hif17019.pdf"
+    }
+  ],
+  "visual_urls": [],
+  "planned_publish_at": "2026-10-03T06:10:00+03:00",
+  "hashtags": [
+    "Science",
+    "Engineering",
+    "Bridges",
+    "PaperKnowledge"
+  ]
+}
