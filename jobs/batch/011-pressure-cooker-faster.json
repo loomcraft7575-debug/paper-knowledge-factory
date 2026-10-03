@@ -1,0 +1,39 @@
+{
+  "job_id": "741a2fc6-f022-480c-89e4-e1e09fa3064d",
+  "batch_index": 11,
+  "question": "Why do pressure cookers cook food faster?",
+  "voice": "af_heart",
+  "script": "A pressure cooker is fast because it changes the temperature at which water boils. In an open pot at sea level, liquid water boils at about 100 degrees Celsius. Adding more heat mostly makes more steam instead of making that boiling water much hotter. A pressure cooker traps steam, raising the pressure inside the sealed pot. At higher pressure, water needs a higher temperature before it boils. That means the liquid and steam surrounding the food can become hotter than they would in an ordinary boiling pot. Higher cooking temperature speeds many physical and chemical changes in food, so beans soften, fibers break down, and heat moves through the food faster. The cooker regulates pressure with valves rather than building pressure without limit. Altitude matters too: lower outside air pressure lowers water's boiling point, which is why pressure cooking is especially useful at high elevations. More pressure, higher boiling temperature, faster cooking.",
+  "beats": [
+    "Why can a pressure cooker cook so fast?",
+    "Open water boils near 100°C at sea level",
+    "More heat then mostly makes more steam",
+    "A pressure cooker traps that steam",
+    "Trapped steam raises the pressure",
+    "Higher pressure raises water's boiling point",
+    "Water and steam can become hotter",
+    "Hotter cooking speeds changes in food",
+    "Beans soften and fibers break down faster",
+    "Valves regulate the pressure",
+    "The cooker does not build pressure without limit",
+    "Altitude lowers normal boiling temperature",
+    "More pressure means hotter boiling and faster cooking"
+  ],
+  "sources": [
+    {
+      "title": "USDA FSIS — High Altitude Cooking",
+      "url": "https://www.fsis.usda.gov/food-safety/safe-food-handling-and-preparation/food-safety-basics/high-altitude-cooking"
+    },
+    {
+      "title": "Penn State Extension — Preparing Meals with Pressure Cookers",
+      "url": "https://extension.psu.edu/preparing-meals-with-pressure-cookers"
+    }
+  ],
+  "visual_urls": [],
+  "planned_publish_at": "2026-10-03T18:10:00+03:00",
+  "hashtags": [
+    "Science",
+    "Engineering",
+    "PaperKnowledge"
+  ]
+}
