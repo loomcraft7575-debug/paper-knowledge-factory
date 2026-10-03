@@ -1,0 +1,39 @@
+{
+  "batch_index": 13,
+  "job_id": "49ebb85d-b575-423d-927e-4a9d8a9694f9",
+  "q": "Why does salt help melt ice?",
+  "script": "Why does salt make ice disappear even when the air is below freezing? Salt does not add heat. Instead, once it dissolves in the thin layer of liquid water that normally exists on ice, it creates salty water called brine. Dissolved ions make it harder for water molecules to organize into the crystal structure of ice, lowering the temperature at which that solution freezes. If the pavement temperature is above the brine's new freezing point, some ice melts and stays liquid instead of immediately refreezing. This is why road crews use salt and other deicing chemicals before or during winter weather. But salt has limits. As temperatures fall, ordinary sodium chloride becomes less effective, and there is a lowest useful temperature for each deicer. Salt also needs some moisture so it can dissolve and form brine. So road salt is not a tiny heater. It changes the freezing conditions of water itself.",
+  "beats": [
+    "Why can salt melt ice below freezing?",
+    "Salt is not adding heat",
+    "A little liquid water exists on the ice",
+    "Salt dissolves and creates brine",
+    "Dissolved ions change freezing conditions",
+    "Water molecules have a harder time forming ice",
+    "The solution freezes at a lower temperature",
+    "Some ice can melt into the brine",
+    "That liquid is less likely to refreeze immediately",
+    "Road crews use this effect in winter",
+    "Ordinary salt becomes less effective when very cold",
+    "Salt needs moisture so it can dissolve",
+    "Road salt changes freezing point, not temperature"
+  ],
+  "sources": [
+    {
+      "title": "FHWA — How Do Anti-Icing Methods Work?",
+      "url": "https://ops.fhwa.dot.gov/weather/resources/publications/tech_briefs/antiicin.htm"
+    },
+    {
+      "title": "American Chemical Society — Road salt and deicing chemistry",
+      "url": "https://cen.acs.org/environment/sustainability/road-salt-deicer-impact-environment-corrosion/103/web/2025/12"
+    }
+  ],
+  "visual_urls": [],
+  "planned_publish_at": "2026-10-03T20:50:00+03:00",
+  "hashtags": [
+    "Science",
+    "Chemistry",
+    "Winter",
+    "PaperKnowledge"
+  ]
+}
